@@ -1,3 +1,5 @@
+[Chạy bằng Docker: desktop, web panel, API và MCP](docs/DOCKER.vi.md)
+
 <div align="center">
   <img src="src/assets/icon.png" width="112" alt="FoxProfile logo" />
   <h1>FoxProfile</h1>

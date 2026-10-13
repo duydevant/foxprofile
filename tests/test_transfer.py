@@ -3,8 +3,9 @@ import zipfile
 
 import pytest
 
+from src.models.profile import Profile
 from src.services.browser.launcher import BrowserLauncher, ProfileBusyError, _LaunchResult
-from src.services.profile.transfer import import_from_zip
+from src.services.profile.transfer import export_to_zip, import_from_zip
 
 
 def _archive(path, name, files):
@@ -33,6 +34,25 @@ def test_import_extracts_normal_archive(tmp_path):
     ok, profile = import_from_zip(zip_path, str(tmp_path / "data"))
     assert ok and profile.name == "good"
     assert (tmp_path / "data" / "good" / "fingerprint.json").read_text() == "{}"
+
+
+@pytest.mark.parametrize("target_exists", [False, True])
+def test_export_skips_browser_lock_symlinks_and_keeps_data(tmp_path, target_exists):
+    data = tmp_path / "browser"
+    data.mkdir()
+    (data / "cookies.sqlite").write_bytes(b"persistent cookies")
+    target = tmp_path / "external"
+    if target_exists:
+        target.write_text("outside the profile")
+    try:
+        (data / "lock").symlink_to(target)
+    except OSError:
+        pytest.skip("Creating symlinks is not permitted on this host")
+    ok, archive = export_to_zip(Profile(name="docker-test"), str(data), str(tmp_path))
+    assert ok, archive
+    with zipfile.ZipFile(archive) as exported:
+        assert exported.read("data/cookies.sqlite") == b"persistent cookies"
+        assert "data/lock" not in exported.namelist()
 
 
 def test_exclusive_blocks_second_holder():

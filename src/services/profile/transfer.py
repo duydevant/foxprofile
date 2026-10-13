@@ -37,6 +37,11 @@ def export_to_zip(
                 for root, _dirs, files in os.walk(profile_data_dir):
                     for file in files:
                         file_path = os.path.join(root, file)
+                        # Linux browsers leave process-lock symlinks behind.
+                        # They are not portable profile data; following a dangling
+                        # link fails the export (and a live link can leave the profile).
+                        if pathlib.Path(file_path).is_symlink():
+                            continue
                         arcname = os.path.join(
                             "data",
                             os.path.relpath(file_path, profile_data_dir),

@@ -179,6 +179,7 @@ pyrightconfig.json
 camoufox_data/
 profiles.json
 logs/
+docker-data/
 
 # Tooling artefacts
 uv.lock
