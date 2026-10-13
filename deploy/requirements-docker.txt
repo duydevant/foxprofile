@@ -1,7 +1,7 @@
 # Versions verified together for the Linux Docker runtime.
 -r ../requirements.txt
 flet==0.80.5
-flet-desktop-light==0.80.5
+flet-desktop-light==0.82.2
 camoufox[geoip]==0.5.8
 python-dotenv==1.2.4
 aiohttp==3.14.5
